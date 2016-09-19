@@ -1,10 +1,10 @@
 from django import template
-from django.db import models
+from django.apps import apps
 from django.core.cache import cache
 
 register = template.Library()
 
-Chunk = models.get_model('chunks', 'chunk')
+Chunk = apps.get_model('chunks', 'chunk')
 CACHE_PREFIX = "chunk_"
 
 def do_chunk(parser, token):
@@ -41,7 +41,7 @@ class ChunkNode(template.Node):
 def do_get_chunk(parser, token):
     tokens = token.split_contents()
     if len(tokens) != 4 or tokens[2] != 'as':
-        raise template.TemplateSyntaxError, 'Invalid syntax. Usage: {%% %s "key" as varname %%}' % tokens[0]
+        raise template.TemplateSyntaxError('Invalid syntax. Usage: {%% %s "key" as varname %%}' % tokens[0])
     tagname, key, varname = tokens[0], tokens[1], tokens[3]
     key = ensure_quoted_string(key, "Key argument to %r must be in quotes" % tagname)
     return GetChunkNode(key, varname)
